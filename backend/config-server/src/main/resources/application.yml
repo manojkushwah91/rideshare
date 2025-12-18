@@ -8,5 +8,12 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/your-username/ride-config-repo
+          uri: https://github.com/Manojkushwah-dev/ride-sharing-platform
           clone-on-start: true
+          default-label: main
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
