@@ -4,10 +4,10 @@ server:
 spring:
   application:
     name: api-gateway
-  config:
-    import: optional:configserver:http://config-server:8888
+
   main:
     web-application-type: reactive
+
   cloud:
     gateway:
       discovery:
