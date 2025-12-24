@@ -1,25 +1,26 @@
-# Maven
-target/
-*.log
-*.tmp
-*.bak
-*.swp
+# Maven - Ignore build output but NOT source files
+**/target/
+**/classes/
+.idea/
+*.iml
+.env
 
-# Eclipse / IntelliJ IDEA
-/.idea/
-/*.iml
-/.classpath
-/.project
-/.settings/
+# IDEs
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+.nb-configuration/
 
-# OS generated files
+# Environment and Secrets
+.env
+.env.local
+
+# OS Files
 .DS_Store
 Thumbs.db
 
-# Spring Boot / application
-*.yml
-*.properties
-
-# Docker
-Dockerfile
-docker-compose.override.yml
+# Docker - Keep Dockerfiles and Compose, ignore data
+mysql-data/
