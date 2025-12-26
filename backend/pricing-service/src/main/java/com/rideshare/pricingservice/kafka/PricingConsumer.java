@@ -1,4 +1,4 @@
-package com.rideshare.pricing.kafka;
+package com.rideshare.pricingservice.kafka;
 
 import com.rideshare.common.events.*;
 import lombok.RequiredArgsConstructor;

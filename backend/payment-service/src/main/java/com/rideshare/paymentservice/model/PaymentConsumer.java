@@ -1,4 +1,4 @@
-package com.rideshare.payment.kafka;
+package com.rideshare.paymentservice.model;
 
 import com.rideshare.common.events.*;
 import lombok.RequiredArgsConstructor;

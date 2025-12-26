@@ -1,4 +1,4 @@
-package com.rideshare.notification.kafka;
+package com.rideshare.notificationservice.kafka;
 
 import com.rideshare.common.events.PaymentCompletedEvent;
 import org.springframework.kafka.annotation.KafkaListener;
