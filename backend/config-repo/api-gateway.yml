@@ -50,3 +50,5 @@ eureka:
       defaultZone: http://discovery-server:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
+  instance:
+    prefer-ip-address: true
