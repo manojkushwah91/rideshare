@@ -1,15 +1,21 @@
 package com.rideshare.authservice.config;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
-import reactor.core.publisher.Mono;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 @Component
-public class JwtAuthenticationFilter implements WebFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
 
@@ -18,34 +24,44 @@ public class JwtAuthenticationFilter implements WebFilter {
     }
 
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
 
-        String path = exchange.getRequest().getURI().getPath();
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String userEmail;
 
-        // 🔓 Public endpoints
-        if (path.startsWith("/auth")
-                || path.startsWith("/actuator")) {
-            return chain.filter(exchange);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        String header = exchange.getRequest()
-                .getHeaders()
-                .getFirst(HttpHeaders.AUTHORIZATION);
-
-        if (header == null || !header.startsWith(SecurityConstants.TOKEN_PREFIX)) {
-            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            return exchange.getResponse().setComplete();
-        }
-
-        String token = header.substring(SecurityConstants.TOKEN_PREFIX.length());
-
+        jwt = authHeader.substring(7);
         try {
-            jwtUtil.validateToken(token);
+            // Validate Token
+            if (jwtUtil.validateToken(jwt) != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                userEmail = jwtUtil.extractUsername(jwt);
+                
+                // Create Authentication Token
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userEmail,
+                        null,
+                        new ArrayList<>() // Add authorities/roles here if needed later
+                );
+                
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                
+                // Set the user in the Security Context
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
         } catch (Exception e) {
-            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            return exchange.getResponse().setComplete();
+            // Token is invalid
+            System.out.println("Token validation failed: " + e.getMessage());
         }
 
-        return chain.filter(exchange);
+        filterChain.doFilter(request, response);
     }
 }
