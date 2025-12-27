@@ -4,7 +4,7 @@ import com.rideshare.authservice.dto.*;
 import com.rideshare.authservice.model.UserAuth;
 import com.rideshare.authservice.repository.UserAuthRepository;
 import lombok.RequiredArgsConstructor;
-import com.rideshare.common.security.JwtUtil;
+import com.rideshare.authservice.config.JwtUtil;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
