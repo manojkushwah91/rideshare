@@ -4,10 +4,8 @@ server:
 spring:
   application:
     name: api-gateway
-
   main:
     web-application-type: reactive
-
   cloud:
     gateway:
       discovery:
@@ -16,31 +14,39 @@ spring:
           lower-case-service-id: true
       routes:
         - id: auth-service
-          uri: lb://auth-service
+          uri: http://auth-service:8082
           predicates:
             - Path=/auth/**
+            
         - id: ride-service
-          uri: lb://ride-service
+          uri: lb://RIDE-SERVICE
           predicates:
             - Path=/rides/**
+            
         - id: user-service
-          uri: lb://user-service
+          uri: http://user-service:8084
           predicates:
             - Path=/users/**
+          filters:
+            - AuthenticationFilter  
+            
         - id: driver-service
-          uri: lb://driver-service
+          uri: lb://DRIVER-SERVICE
           predicates:
             - Path=/drivers/**
+            
         - id: pricing-service
-          uri: lb://pricing-service
+          uri: lb://PRICING-SERVICE
           predicates:
             - Path=/pricing/**
+            
         - id: payment-service
-          uri: lb://payment-service
+          uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/payments/**
+            
         - id: notification-service
-          uri: lb://notification-service
+          uri: lb://NOTIFICATION-SERVICE
           predicates:
             - Path=/notifications/**
 

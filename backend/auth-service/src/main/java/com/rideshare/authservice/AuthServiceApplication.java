@@ -8,7 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class AuthServiceApplication {
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(AuthServiceApplication.class);
-        app.setWebApplicationType(WebApplicationType.REACTIVE);
+        
+        // CHANGE THIS TO SERVLET (or just delete the line entirely)
+        app.setWebApplicationType(WebApplicationType.SERVLET); 
+        
         app.run(args);
     }
 }

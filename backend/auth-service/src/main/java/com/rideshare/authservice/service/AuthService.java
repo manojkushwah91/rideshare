@@ -5,7 +5,8 @@ import com.rideshare.authservice.model.UserAuth;
 import com.rideshare.authservice.repository.UserAuthRepository;
 import lombok.RequiredArgsConstructor;
 import com.rideshare.authservice.config.JwtUtil;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+// CHANGE 1: Import the Interface, not the Class
+import org.springframework.security.crypto.password.PasswordEncoder; 
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,8 @@ import java.time.LocalDateTime;
 public class AuthService {
 
     private final UserAuthRepository repository;
-    private final BCryptPasswordEncoder encoder;
+    // CHANGE 2: Use the Interface type here
+    private final PasswordEncoder encoder; 
     private final JwtUtil jwtUtil;
 
     public AuthResponse register(RegisterRequest request) {
@@ -25,7 +27,7 @@ public class AuthService {
 
         UserAuth user = UserAuth.builder()
                 .email(request.getEmail())
-                .password(encoder.encode(request.getPassword()))
+                .password(encoder.encode(request.getPassword())) // Works exactly the same
                 .role(request.getRole())
                 .createdAt(LocalDateTime.now())
                 .enabled(true)
@@ -48,7 +50,7 @@ public class AuthService {
         UserAuth user = repository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
-        if (!encoder.matches(request.getPassword(), user.getPassword())) {
+        if (!encoder.matches(request.getPassword(), user.getPassword())) { // Works exactly the same
             throw new RuntimeException("Invalid credentials");
         }
 
