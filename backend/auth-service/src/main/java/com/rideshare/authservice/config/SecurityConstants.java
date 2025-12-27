@@ -1,4 +1,4 @@
-package com.rideshare.common.security;
+package com.rideshare.authservice.config;
 
 public class SecurityConstants {
     // This MUST match across all services

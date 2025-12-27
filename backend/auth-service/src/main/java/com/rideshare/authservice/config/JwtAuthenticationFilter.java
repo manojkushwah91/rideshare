@@ -1,4 +1,4 @@
-package com.rideshare.common.security;
+package com.rideshare.authservice.config;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

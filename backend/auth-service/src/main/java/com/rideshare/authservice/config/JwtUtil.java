@@ -1,4 +1,4 @@
-package com.rideshare.authservice.config; // <--- CHANGED THIS
+package com.rideshare.authservice.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -14,11 +14,15 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
+    // Using the secret from SecurityConstants for consistency
     private final Key key = Keys.hmacShaKeyFor(SecurityConstants.JWT_SECRET.getBytes());
 
+    /**
+     * Updated to accept role to resolve the AuthService compilation error.
+     */
     public String generateToken(String subject, String role) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
+        claims.put("role", role); // Adding role as a custom claim
 
         return Jwts.builder()
                 .setClaims(claims)

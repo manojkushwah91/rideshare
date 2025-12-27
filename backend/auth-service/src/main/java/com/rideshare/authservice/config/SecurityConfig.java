@@ -1,4 +1,4 @@
-package com.rideshare.common.security;
+package com.rideshare.authservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,7 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-@Configuration("commonSecurityConfig")
+@Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
