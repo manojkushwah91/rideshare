@@ -42,13 +42,6 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- Shared Security (JWT validation, filters) -->
-        <dependency>
-            <groupId>com.rideshare</groupId>
-            <artifactId>common-security</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
         <!-- Actuator -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
