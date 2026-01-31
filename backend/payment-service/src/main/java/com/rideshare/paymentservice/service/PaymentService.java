@@ -15,6 +15,12 @@ public class PaymentService {
 
     public void processWalletPayment(Long userId, Long rideId, Double amount) {
 
+        // Check if payment already exists for this ride (prevent duplicates)
+        if (repository.existsByRideId(rideId)) {
+            System.out.println("⚠️ Payment already exists for ride " + rideId + ", skipping duplicate payment");
+            return;
+        }
+
         // In real life, we would call User Service via EVENT or REST
         // For now assume wallet validation happens asynchronously
 
@@ -29,7 +35,7 @@ public class PaymentService {
 
         repository.save(transaction);
 
-        System.out.println("💰 Payment successful for ride " + rideId);
+        System.out.println("💰 Payment successful for ride " + rideId + ", amount: $" + amount);
     }
 
     public void failPayment(Long userId, Long rideId, Double amount) {

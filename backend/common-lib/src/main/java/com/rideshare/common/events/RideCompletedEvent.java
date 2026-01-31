@@ -8,4 +8,6 @@ import lombok.*;
 public class RideCompletedEvent {
     private String rideId;
     private String userId;
+    private String driverId;
+    private Double fare;
 }

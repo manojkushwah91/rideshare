@@ -13,6 +13,16 @@ public class UserController {
 
     private final UserService userService;
 
+    @PostMapping
+    public UserProfile createUser(@RequestBody UserProfile profile) {
+        return userService.createProfile(
+                profile.getName(),
+                profile.getEmail(),
+                profile.getPhone(),
+                profile.getRole()
+        );
+    }
+
     @GetMapping("/me")
     public UserProfile getProfile(@RequestHeader("X-USER-EMAIL") String email) {
         return userService.getProfile(email);

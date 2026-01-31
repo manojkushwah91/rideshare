@@ -14,39 +14,37 @@ spring:
           lower-case-service-id: true
       routes:
         - id: auth-service
-          uri: http://auth-service:8082
+          uri: lb://auth-service
           predicates:
-            - Path=/auth/**
+            - Path=/api/auth/**,/auth/**
             
         - id: ride-service
-          uri: lb://RIDE-SERVICE
+          uri: lb://ride-service
           predicates:
-            - Path=/rides/**
+            - Path=/api/rides/**
             
         - id: user-service
-          uri: http://user-service:8084
+          uri: lb://user-service
           predicates:
-            - Path=/users/**
-          filters:
-            - AuthenticationFilter  
+            - Path=/api/v1/users/**,/users/**
             
         - id: driver-service
-          uri: lb://DRIVER-SERVICE
+          uri: lb://driver-service
           predicates:
             - Path=/drivers/**
             
         - id: pricing-service
-          uri: lb://PRICING-SERVICE
+          uri: lb://pricing-service
           predicates:
             - Path=/pricing/**
             
         - id: payment-service
-          uri: lb://PAYMENT-SERVICE
+          uri: lb://payment-service
           predicates:
             - Path=/payments/**
             
         - id: notification-service
-          uri: lb://NOTIFICATION-SERVICE
+          uri: lb://notification-service
           predicates:
             - Path=/notifications/**
 

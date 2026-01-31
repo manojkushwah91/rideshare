@@ -38,4 +38,38 @@ public class RideController {
         rideService.publishRideRequestedEvent(dto.getUserId(), dto.getPickupLocation(), dto.getDropLocation());
         return ResponseEntity.ok("Ride Requested");
     }
+
+    @GetMapping("/available")
+    public List<RideResponse> getAvailableRides() {
+        return rideService.getAvailableRides();
+    }
+
+    @GetMapping("/{rideId}")
+    public RideResponse getRideById(@PathVariable Long rideId) {
+        return rideService.getRideById(rideId);
+    }
+
+    @PutMapping("/{rideId}/accept")
+    public RideResponse acceptRide(
+            @PathVariable Long rideId,
+            @RequestHeader("X-USER-ID") String driverIdStr) {
+        Long driverId = Long.parseLong(driverIdStr);
+        return rideService.acceptRide(rideId, driverId);
+    }
+
+    @PutMapping("/{rideId}/start")
+    public RideResponse startRide(
+            @PathVariable Long rideId,
+            @RequestHeader("X-USER-ID") String driverIdStr) {
+        Long driverId = Long.parseLong(driverIdStr);
+        return rideService.startRide(rideId, driverId);
+    }
+
+    @PutMapping("/{rideId}/complete")
+    public RideResponse completeRide(
+            @PathVariable Long rideId,
+            @RequestHeader("X-USER-ID") String driverIdStr) {
+        Long driverId = Long.parseLong(driverIdStr);
+        return rideService.completeRide(rideId, driverId);
+    }
 }

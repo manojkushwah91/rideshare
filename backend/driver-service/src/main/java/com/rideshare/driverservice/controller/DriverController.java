@@ -39,4 +39,17 @@ public class DriverController {
     public List<DriverProfile> availableDrivers() {
         return driverService.findAvailableDrivers();
     }
+
+    @GetMapping("/rides/available")
+    public Object getAvailableRides() {
+        return driverService.getAvailableRides();
+    }
+
+    @PutMapping("/rides/{rideId}/accept")
+    public Object acceptRide(
+            @PathVariable Long rideId,
+            @RequestHeader("X-USER-ID") String driverIdStr) {
+        Long driverId = Long.parseLong(driverIdStr);
+        return driverService.acceptRide(rideId, driverId);
+    }
 }

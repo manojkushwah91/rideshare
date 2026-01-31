@@ -1,6 +1,7 @@
 package com.rideshare.rideservice.kafka;
 
 import com.rideshare.common.events.RideRequestedEvent;
+import com.rideshare.common.events.RideAcceptedEvent;
 import com.rideshare.common.events.RideCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -14,6 +15,10 @@ public class RideEventProducer {
 
     public void publishRideRequested(RideRequestedEvent event) {
         kafkaTemplate.send("ride.requested", event.getRideId(), event);
+    }
+
+    public void publishRideAccepted(RideAcceptedEvent event) {
+        kafkaTemplate.send("ride.accepted", event.getRideId(), event);
     }
 
     public void publishRideCompleted(RideCompletedEvent event) {

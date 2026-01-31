@@ -21,6 +21,37 @@ public class UserService {
     private final UserWalletRepository walletRepo;
     private final UserRatingRepository ratingRepo;
 
+    public UserProfile createProfile(String name, String email, String phone, String role) {
+        // Check if user already exists
+        if (profileRepo.findByEmail(email).isPresent()) {
+            throw new RuntimeException("User already exists");
+        }
+
+        UserProfile profile = UserProfile.builder()
+                .name(name)
+                .email(email)
+                .phone(phone)
+                .role(role)
+                .rating(5.0)
+                .totalRides(0)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        UserProfile saved = profileRepo.save(profile);
+
+        // Create wallet for new user
+        UserWallet wallet = UserWallet.builder()
+                .userId(saved.getId())
+                .balance(BigDecimal.ZERO)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+        walletRepo.save(wallet);
+
+        return saved;
+    }
+
     public UserProfile getProfile(String email) {
         return profileRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
