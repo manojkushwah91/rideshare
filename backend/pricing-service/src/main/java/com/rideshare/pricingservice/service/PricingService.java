@@ -43,6 +43,24 @@ public class PricingService {
         return new FareResponse(total, surge);
     }
 
+    /**
+     * Calculate fare from pickup and dropoff locations
+     * Uses a simple mock distance calculation (in production, use Google Maps API or similar)
+     */
+    public FareResponse calculateFareFromLocations(String pickupLocation, String dropoffLocation, Long rideId) {
+        // Mock distance calculation: assume 5-15 km for any ride
+        // In production, use a geocoding service to calculate actual distance
+        double mockDistanceKm = 5.0 + (Math.random() * 10.0); // Random between 5-15 km
+        double mockTimeMinutes = mockDistanceKm * 2.5; // Assume average speed of 24 km/h
+        
+        FareRequest request = new FareRequest();
+        request.setRideId(rideId);
+        request.setDistanceKm(mockDistanceKm);
+        request.setTimeMinutes(mockTimeMinutes);
+        
+        return calculateFare(request);
+    }
+
     private double determineSurge() {
         // Simple logic for now
         return Math.random() > 0.7 ? 1.5 : 1.0;

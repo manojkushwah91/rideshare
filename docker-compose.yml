@@ -7,6 +7,8 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "2181:2181"
+    networks:
+      - ride-network
 
   kafka:
     image: confluentinc/cp-kafka:7.6.1
@@ -20,6 +22,8 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - ride-network
 
   mysql:
     image: mysql:8
@@ -31,6 +35,9 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ride-network
 
   config-server:
     build:
@@ -45,6 +52,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    networks:
+      - ride-network
 
   discovery-server:
     build:
@@ -58,6 +67,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+    networks:
+      - ride-network
 
   api-gateway:
     build:
@@ -73,6 +84,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+    networks:
+      - ride-network
 
   auth-service:
     build:
@@ -93,6 +106,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/rideshare_db
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=Manoj@8719895574
+    networks:
+      - ride-network
 
   ride-service:
     build:
@@ -101,6 +116,8 @@ services:
     ports:
       - "8083:8083"
     depends_on:
+      mysql:
+        condition: service_started
       config-server:
         condition: service_healthy
       kafka:
@@ -108,6 +125,11 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/rideshare_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Manoj@8719895574
+    networks:
+      - ride-network
 
   user-service:
     build:
@@ -116,11 +138,20 @@ services:
     ports:
       - "8084:8084"
     depends_on:
+      mysql:
+        condition: service_started
       config-server:
         condition: service_healthy
+      discovery-server:
+        condition: service_started
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/rideshare_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Manoj@8719895574
+    networks:
+      - ride-network
 
   driver-service:
     build:
@@ -129,11 +160,20 @@ services:
     ports:
       - "8085:8085"
     depends_on:
+      mysql:
+        condition: service_started
       config-server:
         condition: service_healthy
+      discovery-server:
+        condition: service_started
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/rideshare_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Manoj@8719895574
+    networks:
+      - ride-network
 
   payment-service:
     build:
@@ -142,11 +182,22 @@ services:
     ports:
       - "8086:8086"
     depends_on:
+      mysql:
+        condition: service_started
       config-server:
         condition: service_healthy
+      kafka:
+        condition: service_started
+      discovery-server:
+        condition: service_started
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/rideshare_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Manoj@8719895574
+    networks:
+      - ride-network
 
   pricing-service:
     build:
@@ -155,11 +206,20 @@ services:
     ports:
       - "8087:8087"
     depends_on:
+      mysql:
+        condition: service_started
       config-server:
         condition: service_healthy
+      discovery-server:
+        condition: service_started
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/rideshare_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Manoj@8719895574
+    networks:
+      - ride-network
 
   notification-service:
     build:
@@ -168,13 +228,40 @@ services:
     ports:
       - "8088:8088"
     depends_on:
+      mysql:
+        condition: service_started
       config-server:
         condition: service_healthy
       kafka:
         condition: service_started
+      discovery-server:
+        condition: service_started
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/rideshare_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Manoj@8719895574
+    networks:
+      - ride-network
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_BASE_URL=http://localhost:8080
+    container_name: frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      api-gateway:
+        condition: service_started
+    networks:
+      - ride-network
 
 volumes:
   mysql-data:
+
+networks:
+  ride-network:
+    driver: bridge

@@ -68,6 +68,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- web socket-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.rideshare</groupId>
@@ -75,7 +80,6 @@
             <version>1.0.0</version>
         </dependency>
          
-
     </dependencies>
 
     <dependencyManagement>

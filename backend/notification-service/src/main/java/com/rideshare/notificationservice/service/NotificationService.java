@@ -13,9 +13,9 @@ import java.util.List;
 public class NotificationService {
 
     private final NotificationRepository repository;
+    private final NotificationPublisher notificationPublisher;
 
     public void sendNotification(Long userId, String type, String message) {
-
         Notification notification = Notification.builder()
                 .userId(userId)
                 .type(type)
@@ -28,6 +28,14 @@ public class NotificationService {
 
         // Real-world: integrate email/SMS here
         System.out.println("📢 Notification sent to user " + userId + ": " + message);
+    }
+    
+    /**
+     * Send notification by user email (for SSE)
+     */
+    public void sendNotificationByEmail(String userEmail, String type, String message) {
+        notificationPublisher.sendNotification(userEmail, type, message);
+        System.out.println("📢 Notification sent to " + userEmail + ": " + message);
     }
 
     public List<Notification> getUserNotifications(Long userId) {

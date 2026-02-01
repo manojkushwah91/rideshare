@@ -44,12 +44,16 @@ spring:
         - id: pricing-service
           uri: lb://pricing-service
           predicates:
-            - Path=/pricing/**
+            - Path=/api/pricing/**
+          filters:
+            - RewritePath=/api/pricing/(?<segment>.*), /pricing/${segment}
             
         - id: payment-service
           uri: lb://payment-service
           predicates:
-            - Path=/payments/**
+            - Path=/api/payments/**
+          filters:
+            - RewritePath=/api/payments/(?<segment>.*), /payments/${segment}
             
         - id: notification-service
           uri: lb://notification-service
