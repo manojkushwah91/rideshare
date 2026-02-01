@@ -18,6 +18,7 @@ public class Ride {
     private Long id;
 
     private Long userId;
+    private String passengerEmail; // Added to support email-based queries
     private Long driverId;
     private String pickupLocation;
     private String dropLocation;

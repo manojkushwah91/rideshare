@@ -54,7 +54,31 @@ public class UserService {
 
     public UserProfile getProfile(String email) {
         return profileRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseGet(() -> {
+                    // Auto-create default profile if user not found
+                    UserProfile defaultProfile = UserProfile.builder()
+                            .email(email)
+                            .name("User")
+                            .role("USER")
+                            .rating(5.0)
+                            .totalRides(0)
+                            .createdAt(LocalDateTime.now())
+                            .updatedAt(LocalDateTime.now())
+                            .build();
+                    
+                    UserProfile saved = profileRepo.save(defaultProfile);
+                    
+                    // Create wallet for new user
+                    UserWallet wallet = UserWallet.builder()
+                            .userId(saved.getId())
+                            .balance(BigDecimal.ZERO)
+                            .createdAt(LocalDateTime.now())
+                            .updatedAt(LocalDateTime.now())
+                            .build();
+                    walletRepo.save(wallet);
+                    
+                    return saved;
+                });
     }
 
     public UserProfile updateProfile(String email, UserProfile updated) {

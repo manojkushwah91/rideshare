@@ -24,9 +24,10 @@ public class RideService {
     private final RideRepository rideRepository;
     private final RideEventProducer rideEventProducer;
 
-    public RideResponse createRide(RideRequest request) {
+    public RideResponse createRide(RideRequest request, String passengerEmail) {
         Ride ride = new Ride();
         ride.setUserId(request.getUserId());
+        ride.setPassengerEmail(passengerEmail); // Store email for email-based queries
         ride.setDriverId(request.getDriverId());
         ride.setPickupLocation(request.getPickupLocation());
         ride.setDropLocation(request.getDropLocation());
@@ -174,5 +175,28 @@ public class RideService {
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new RuntimeException("Ride not found"));
         return mapToResponse(ride);
+    }
+
+    public List<RideResponse> getRidesByPassengerEmail(String email) {
+        return rideRepository.findByPassengerEmail(email)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public RideResponse findActiveRideByPassenger(String email) {
+        // Find rides that are not completed or cancelled for this passenger
+        List<Ride> activeRides = rideRepository.findByPassengerEmail(email)
+                .stream()
+                .filter(ride -> !RideStatus.COMPLETED.name().equals(ride.getStatus()) 
+                        && !RideStatus.CANCELLED.name().equals(ride.getStatus()))
+                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt())) // Most recent first
+                .collect(Collectors.toList());
+        
+        if (activeRides.isEmpty()) {
+            return null;
+        }
+        
+        return mapToResponse(activeRides.get(0));
     }
 }

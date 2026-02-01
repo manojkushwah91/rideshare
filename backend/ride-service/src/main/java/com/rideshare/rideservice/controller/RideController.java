@@ -3,6 +3,7 @@ package com.rideshare.rideservice.controller;
 import com.rideshare.rideservice.dto.RideRequest;
 import com.rideshare.rideservice.dto.RideResponse;
 import com.rideshare.rideservice.service.RideService;
+import com.rideshare.rideservice.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +18,37 @@ public class RideController {
     private final RideService rideService;
 
     @PostMapping
-    public RideResponse createRide(@RequestBody RideRequest request) {
-        return rideService.createRide(request);
+    public RideResponse createRide(
+            @RequestBody RideRequest request,
+            @RequestHeader(value = "X-USER-EMAIL", required = false) String emailHeader) {
+        // Extract email from JWT token header
+        String email = emailHeader != null ? emailHeader : SecurityUtil.getCurrentUserEmail();
+        return rideService.createRide(request, email);
     }
 
     @GetMapping("/user/{userId}")
     public List<RideResponse> getUserRides(@PathVariable Long userId) {
         return rideService.getRidesByUser(userId);
+    }
+
+    @GetMapping("/my-rides")
+    public List<RideResponse> getMyRides(@RequestHeader(value = "X-USER-EMAIL", required = false) String emailHeader) {
+        // Extract email from JWT token header
+        String email = emailHeader != null ? emailHeader : SecurityUtil.getCurrentUserEmail();
+        // Use email-based query to find rides for this specific user
+        return rideService.getRidesByPassengerEmail(email);
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<RideResponse> getActiveRide(@RequestHeader(value = "X-USER-EMAIL", required = false) String emailHeader) {
+        // Extract email from JWT token header
+        String email = emailHeader != null ? emailHeader : SecurityUtil.getCurrentUserEmail();
+        // Find active ride for this specific user
+        RideResponse activeRide = rideService.findActiveRideByPassenger(email);
+        if (activeRide == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(activeRide);
     }
 
     @GetMapping("/driver/{driverId}")
@@ -33,9 +58,13 @@ public class RideController {
 
     // --- New Kafka booking endpoint ---
     @PostMapping("/book")
-    public ResponseEntity<String> bookRide(@RequestBody RideRequest dto) {
-
-        rideService.publishRideRequestedEvent(dto.getUserId(), dto.getPickupLocation(), dto.getDropLocation());
+    public ResponseEntity<String> bookRide(
+            @RequestBody RideRequest dto,
+            @RequestHeader(value = "X-USER-ID", required = false) String userIdHeader) {
+        
+        // Use userId from header if available, otherwise from request body
+        Long userId = dto.getUserId() != null ? dto.getUserId() : 1L; // Placeholder
+        rideService.publishRideRequestedEvent(userId, dto.getPickupLocation(), dto.getDropLocation());
         return ResponseEntity.ok("Ride Requested");
     }
 

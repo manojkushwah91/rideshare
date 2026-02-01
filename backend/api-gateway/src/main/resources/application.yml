@@ -16,22 +16,30 @@ spring:
         - id: auth-service
           uri: lb://auth-service
           predicates:
-            - Path=/api/auth/**,/auth/**
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/auth/(?<segment>.*), /api/auth/${segment}
             
         - id: ride-service
           uri: lb://ride-service
           predicates:
             - Path=/api/rides/**
+          filters:
+            - RewritePath=/api/rides/(?<segment>.*), /api/rides/${segment}
             
         - id: user-service
           uri: lb://user-service
           predicates:
-            - Path=/api/v1/users/**,/users/**
+            - Path=/api/users/**
+          filters:
+            - RewritePath=/api/users/(?<segment>.*), /api/v1/users/${segment}
             
         - id: driver-service
           uri: lb://driver-service
           predicates:
-            - Path=/drivers/**
+            - Path=/api/drivers/**
+          filters:
+            - RewritePath=/api/drivers/(?<segment>.*), /drivers/${segment}
             
         - id: pricing-service
           uri: lb://pricing-service

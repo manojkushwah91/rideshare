@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface RideRepository extends JpaRepository<Ride, Long> {
     List<Ride> findByUserId(Long userId);
+    List<Ride> findByPassengerEmail(String passengerEmail);
     List<Ride> findByDriverId(Long driverId);
     List<Ride> findByStatus(String status);
+    List<Ride> findByPassengerEmailAndStatus(String passengerEmail, String status);
 }
